@@ -1,3 +1,4 @@
+from site import getusersitepackages
 from pyrogram import Client, filters 
 
 bot = Client(
@@ -26,11 +27,12 @@ def command1(bot, message):
 def command1(bot, message):
     message.reply_text("I am FineBot")
 
-@bot.on_message(filters.text & filters.private)
+@bot.on_message(filters.command('myid'))
 
-def command1(Client, message):
-    message.reply_text(message.text)
+def command1(bot, message):
+    
+    bot.send_message(message.chat.id, str(message.chat.id))
 
-
+  
 print("bot is working")
 bot.run()   
