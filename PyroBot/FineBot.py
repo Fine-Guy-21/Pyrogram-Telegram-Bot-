@@ -10,7 +10,7 @@ bot = Client(
 @bot.on_message(filters.command('start')& filters.private)
 
 def command1(bot, message):
-    bot.send_message(message.chat.id ,"Hello ")
+    bot.send_message(message.chat.id ,f"Welcome {message.chat.first_name} ")
 
 @bot.on_message(filters.command('greet'))
 
@@ -35,22 +35,49 @@ def command1(bot, message):
 
 Group = "Chatswar"
 Group2 = -1001881740609
-Welcome_Message = "Hello there Welcome to our group"
+
 
 @bot.on_message(filters.chat(Group) & filters.new_chat_members)
 def welcomebot(client , message ):
-    message.reply_text(Welcome_Message)
+   # newmembername = ""
+    message.reply_text("Hello there Welcome to our Entertainment Group ")
 
 
-@bot.on_message(filters.text & filters.chat(Group2) & filters.private)
-def delete_text(bot,message):
+@bot.on_message(filters.command('rmv') & filters.chat(Group2))
+def command1(bot,message):
+    if(message.reply_to_message):    
+        owner = message.reply_to_message.text.split("Said")[0]
+        id = message.reply_to_message.id
+        sender = "@" + message.from_user.username + " "
+        if (owner == sender) :
+            bot.delete_messages(message.chat.id,message.id)
+            bot.delete_messages(message.chat.id, id )
+            bot.send_message(message.chat.id, " Deleted " )
+        else :
+#            bot.send_message(message.chat.id, f" {owner} and {sender} " )
+            message.reply_text(message.chat.id, " It's not your message, Go find your Message🤨" )
+            
+    else :
+        bot.delete_messages(message.chat.id,message.id)
+        bot.send_message(message.chat.id,"You must reply to a text ")
+
+
+
+@bot.on_message(filters.text & filters.chat(Group2))
+def report_text(bot,message):
     thetext = message.text
-    user = message.from_user.first_name 
+    user ="@" + message.from_user.username 
     constr = user + " Said : \" " + thetext + " \""
-    bot.delete_messages(message.chat.id, message.id)     
-    bot.send_message(message.chat.id, constr )
+    
 
-
+    if(message.reply_to_message):
+        user2 = message.reply_to_message.text.split("Said")[0]
+        constr2 = user + " Said : \" " + thetext + " \" \n To : " + user2
+        bot.delete_messages(message.chat.id, message.id)     
+        bot.send_message(message.chat.id, text = constr2, reply_to_message_id = message.reply_to_message.id)
+    else :
+        bot.delete_messages(message.chat.id, message.id)
+        bot.send_message(message.chat.id, constr )
 
 print("bot is working")
 bot.run()   
