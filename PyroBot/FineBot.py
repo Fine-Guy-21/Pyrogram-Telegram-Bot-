@@ -15,7 +15,7 @@ def command1(bot, message):
 @bot.on_message(filters.command('greet'))
 
 def command1(bot, message):
-    bot.send_message(message.chat.id ,"Hello There")
+    message.reply_text("Hello There")
 
 @bot.on_message(filters.command('help'))
 
@@ -31,8 +31,26 @@ def command1(bot, message):
 
 def command1(bot, message):
     
-    bot.send_message(message.chat.id, str(message.chat.id))
+    bot.send_message(message.chat.id, str(message.from_user.id))
 
-  
+Group = "Chatswar"
+Group2 = -1001881740609
+Welcome_Message = "Hello there Welcome to our group"
+
+@bot.on_message(filters.chat(Group) & filters.new_chat_members)
+def welcomebot(client , message ):
+    message.reply_text(Welcome_Message)
+
+
+@bot.on_message(filters.text & filters.chat(Group2) & filters.private)
+def delete_text(bot,message):
+    thetext = message.text
+    user = message.from_user.first_name 
+    constr = user + " Said : \" " + thetext + " \""
+    bot.delete_messages(message.chat.id, message.id)     
+    bot.send_message(message.chat.id, constr )
+
+
+
 print("bot is working")
 bot.run()   
