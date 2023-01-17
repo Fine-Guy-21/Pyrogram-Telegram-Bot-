@@ -1,5 +1,7 @@
+import pyrogram
 from site import getusersitepackages
 from pyrogram import Client, filters 
+
 
 bot = Client(
     "FirstGo" ,
@@ -35,7 +37,7 @@ def command1(bot, message):
 
 Group = "Chatswar"
 Group2 = -1001881740609
-
+Group3 = -1001673884695
 
 @bot.on_message(filters.chat(Group) & filters.new_chat_members)
 def welcomebot(client , message ):
@@ -43,7 +45,7 @@ def welcomebot(client , message ):
     message.reply_text("Hello there Welcome to our Entertainment Group ")
 
 
-@bot.on_message(filters.command('rmv') & filters.chat(Group2))
+@bot.on_message(filters.command('rmv') & filters.chat(Group3))
 def command1(bot,message):
     if(message.reply_to_message):    
         owner = message.reply_to_message.text.split("Said")[0]
@@ -60,10 +62,8 @@ def command1(bot,message):
     else :
         bot.delete_messages(message.chat.id,message.id)
         bot.send_message(message.chat.id,"You must reply to a text ")
-
-
-
-@bot.on_message(filters.text & filters.chat(Group2))
+   
+@bot.on_message(filters.text & filters.chat(Group3))
 def report_text(bot,message):
     thetext = message.text
     user ="@" + message.from_user.username 
@@ -78,6 +78,7 @@ def report_text(bot,message):
     else :
         bot.delete_messages(message.chat.id, message.id)
         bot.send_message(message.chat.id, constr )
+
 
 print("bot is working")
 bot.run()   
