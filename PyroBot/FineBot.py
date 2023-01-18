@@ -1,6 +1,7 @@
 import pyrogram
 from site import getusersitepackages
 from pyrogram import Client, filters 
+from pyrogram.types import InlineKeyboardButton,InlineKeyboardMarkup
 
 
 bot = Client(
@@ -9,10 +10,20 @@ bot = Client(
     api_hash = "2f141cc5bbae5c37d0ed1c1b8a72c280",
     bot_token="5836107188:AAG21vssOh_3emRT52Ivi6JJXwoQ-bANkqc"
 )
+Inlinebuttons = [
+    [
+     InlineKeyboardButton('🔈 Channel',url='https://t.me/Ready_players_Please'),
+     InlineKeyboardButton('👥 Group', url='https://t.me/+EcySgpoTodk1ZTk0')
+    ],
+    [InlineKeyboardButton('🧑‍💻Contact',url='https://t.me/fine_guy_21')]
+]
+
 @bot.on_message(filters.command('start')& filters.private)
 
 def command1(bot, message):
-    bot.send_message(message.chat.id ,f"Welcome {message.chat.first_name} ")
+        text = f"Hello There {message.from_user.first_name}"
+        reply_markup = InlineKeyboardMarkup(Inlinebuttons)
+        message.reply(text = text,reply_markup = reply_markup,disable_web_page_preview = True)
 
 @bot.on_message(filters.command('greet'))
 
@@ -45,7 +56,7 @@ def welcomebot(client , message ):
     message.reply_text("Hello there Welcome to our Entertainment Group ")
 
 
-@bot.on_message(filters.command('rmv') & filters.chat(Group3))
+@bot.on_message(filters.command('rmv') & filters.chat(Group))
 def command1(bot,message):
     if(message.reply_to_message):    
         owner = message.reply_to_message.text.split("Said")[0]
@@ -63,7 +74,7 @@ def command1(bot,message):
         bot.delete_messages(message.chat.id,message.id)
         bot.send_message(message.chat.id,"You must reply to a text ")
    
-@bot.on_message(filters.text & filters.chat(Group3))
+@bot.on_message(filters.text & filters.chat(Group))
 def report_text(bot,message):
     thetext = message.text
     user ="@" + message.from_user.username 
