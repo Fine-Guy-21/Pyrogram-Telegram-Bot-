@@ -38,6 +38,7 @@ def help(bot, message):
              \n<b>/bully</b> - <i>Bully a replied user(slap,kick,mock)</i>
              \n<b>/speak</b> - <i>Reply a text to get text to speech feature</i>
              \n<b>/animate</b> - <i>Reply to a text and it will start writing out the text letters one by one</i>
+             \n<b>/rps</b> -<i>/rps followed by Either "Rock", "Scissor" or "Paper" to play </i>
                 \nFor any inquiry  \ncontact - <u>@Fine_Guy_21</u> 
         
                """
@@ -97,6 +98,24 @@ def speak(bot,message):
         message.reply(" <b>Reply</b> to a <b>text</b>")
         
 
+@bot.on_message(filters.command('es') & filters.command('es'))
+def speak(bot,message):
+    if (message.reply_to_message) :
+        if(message.reply_to_message.text):
+            text=message.reply_to_message.text
+            voice=gTTS(text=text,lang='es')
+            bot.send_chat_action(message.chat.id ,enums.ChatAction.RECORD_AUDIO)
+            text2 = message.reply("Generating audio... please wait! ")
+            voice.save("Esvoice.mp3")
+            bot.delete_messages(message.chat.id,text2.id)
+            bot.send_chat_action(message.chat.id ,enums.ChatAction.UPLOAD_AUDIO)
+            bot.send_voice(message.chat.id,"Esvoice.mp3")
+        else:
+            message.reply("It only works on <b> Texts </b>")
+    else :
+        message.reply(" <b>Reply</b> to a <b>text</b>")
+
+
 
 Group = "Chatswar"
 Group2 = -1001881740609
@@ -148,8 +167,23 @@ def removecom(bot,message):
     else :
         bot.delete_messages(message.chat.id,message.id)
         bot.send_message(message.chat.id,"You must reply to a text ")
+
+@bot.on_message(filters.text) 
+def rpc(bot,message):
+    text = message.text
+    if text == "/rps":
+         message.reply("I couldn't find your choice!")
+    else:     
+        if(text.split(" ")[0]== "/rps"):
+            rps = ["Rock","Scissor","Paper","Rock","Scissor","Paper","Rock","Scissor","Paper","Rock","Scissor","Paper"]
+            choice = random.choice(rps)
+            if text.split(" ")[1] == " ":
+                message.reply("I couldn't find your choice!")
+            else:
+                res = r_p_s(text.split(" ")[1],choice)
+                message.reply(res)
    
-@bot.on_message(filters.text & filters.chat(Class))
+@bot.on_message(filters.text)
 def report_text(bot,message):
         thetext = message.text
         user ="@" + message.from_user.username 
@@ -166,36 +200,62 @@ def report_text(bot,message):
             bot.delete_messages(message.chat.id, message.id)     
             bot.send_message(message.chat.id, text = constr2, reply_to_message_id = message.reply_to_message.id)
 
-        
+
         # Inline_Query 
+def r_p_s(player_choice , bot_choice):
+    
+    if player_choice == "Rock" :
+        if(bot_choice=="Rock"):
+            ans = f"<i>You chose</i> <b>{player_choice}</b> <i>and i choose </i><b>{bot_choice}</b>,<i> It's a tie </i>🤝 "
+        elif (bot_choice=="Paper"):
+            ans = f"<i>Haha, You chose</i> <b>{player_choice}</b> <i>and i choose</i> <b>{bot_choice}</b>,<i> So I win</i>🤭 "
+        else:
+            ans = f"<i>Congrats, You chose</i> <b>{player_choice}</b><i> and i choose</i> <b>{bot_choice}</b>,<i>So You Win </i>👏🏿"
+    elif player_choice == "Paper" :
+        if(bot_choice=="Rock"):
+            ans = f"<i>Congrats, You chose</i> <b>{player_choice}</b><i> and i choose</i> <b>{bot_choice}</b>,<i>So You Win </i>👏🏿"
+        elif (bot_choice=="Paper"):
+            ans = f"<i>You chose</i> <b>{player_choice}</b> <i>and i choose </i><b>{bot_choice}</b>,<i> It's a tie</i>🤝 "
+        else:
+            ans = f"<i>Haha, You chose</i> <b>{player_choice}</b> <i>and i choose</i> <b>{bot_choice}</b>,<i> So I win</i>🤭 "
+    elif player_choice == "Scissor" :
+        if(bot_choice=="Rock"):
+            ans = f"<i>Haha, You chose</i> <b>{player_choice}</b> <i>and i choose</i> <b>{bot_choice}</b>,<i> So I win</i>🤭 "
+        elif (bot_choice=="Paper"):
+            ans = f"<i>Congrats, You chose</i> <b>{player_choice}</b><i> and i choose</i> <b>{bot_choice}</b>,<i>So You Win</i>👏🏿"
+        else:
+            ans = f"<i>You chose</i> <b>{player_choice}</b> <i>and i choose </i><b>{bot_choice}</b>,<i> It's a tie</i>🤝 "
+    else :
+            ans = "You might have to check your input! \nUse \"<b>Rock</b>\", \"<b>Paper</b>\" & \"<b>Scissor</b>\" " 
+    return ans 
+
+
 
 @bot.on_inline_query()
 def inline_query(bot,inline_query):
-     rpc = ["Rock","Scissor","Paper","Rock","Scissor","Paper","Rock","Scissor","Paper","Rock","Scissor","Paper"]
-     choice = random.choice(rpc)
+     rps = ["Rock","Scissor","Paper","Rock","Scissor","Paper","Rock","Scissor","Paper","Rock","Scissor","Paper"]
+     choice = random.choice(rps)
      inline_query.answer(
         results = [
                 InlineQueryResultArticle(
                     title="Rock",
                     description="Send Rock for the famous game rock-paper-scissor",
-                        
-
                     input_message_content=InputTextMessageContent(
-                         "Rock vs " + choice 
+                        r_p_s("Rock",choice) 
                     )
                 ),
                 InlineQueryResultArticle(
                     title="Paper",
                     description="Send Paper for the famous game rock-paper-scissor",
                     input_message_content=InputTextMessageContent(
-                         "Paper vs " + choice 
+                         r_p_s("Paper",choice)
                     )
                 ),
                 InlineQueryResultArticle(
                     title="Scissors",
                     description="Send Scissors for the famous game rock-paper-scissor",
                     input_message_content=InputTextMessageContent(
-                        "Scissors vs " + choice  
+                         r_p_s("Scissor",choice)  
                     )
                 )
         ],
