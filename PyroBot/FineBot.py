@@ -21,6 +21,62 @@ Inlinebuttons = [
     [InlineKeyboardButton('🧑‍💻Contact',url='https://t.me/fine_guy_21')]
 ]
 
+                    #DEF#
+def calculator(word):
+    result = ""
+    if len(word) > 2 :
+        if len(word) % 2 == 0:
+            max = int(len(word)/2) 
+            for i in range(0,max):
+                res = int(word[i]) + int(word[len(word)-1-i])
+                result = result + str(res)
+            return calculator(result)      
+            
+        else:
+            max = int(len(word)/2)
+            for i in range(0,max):
+                res = int(word[i]) + int(word[len(word)-1-i])
+                result = result + str(res) 
+                if i == max-1:
+                    result = result + str(word[max])
+            return calculator(result)
+            
+    else:
+        return (word)
+
+def appearance(sentence):  
+    Numbers = ""
+    checked_letters = []
+    for x in sentence:
+        counter = 0
+        if x == " ":          
+            continue
+        elif x not in checked_letters:
+            for y in sentence:                      #Blake loves Lisa
+                if y == " ":
+                    continue
+                elif y == x :
+                    counter += 1
+                else:
+                    continue
+            Numbers = Numbers + str(counter)
+            checked_letters.append(x)
+        else:
+            continue
+    return Numbers  
+
+def SentenceGenerator(male , female):
+    male= male.lower()
+    female= female.lower()
+    Sentence = f" <b>{male}</b> <i>loves</i> <b>{female}</b>" 
+    result = calculator(appearance(Sentence))
+    mes = ( f"{Sentence} : <b>{result}% </b>.")
+    
+    return mes
+
+
+
+
 @bot.on_message(filters.command('start'))
 def start(bot, message):
         text = f"Hello There {message.from_user.first_name}"
@@ -34,11 +90,14 @@ def help(bot, message):
     bot.send_message(message.chat.id ,
         text = """
              \n<b>/start</b> - <i>Starting The Bot</i>       
-             \n<b>/Getid</b> - <i>Get your telegram id , reply to get other people id</i>
+             \n<b>/getid</b> - <i>Get your telegram id , reply to get other people id</i>
              \n<b>/bully</b> - <i>Bully a replied user(slap,kick,mock)</i>
              \n<b>/speak</b> - <i>Reply a text to get text to speech feature</i>
+             \n<b>/hablar</b> - <i>Reply a text to get a spanish text to a speech feature</i>
              \n<b>/animate</b> - <i>Reply to a text and it will start writing out the text letters one by one</i>
-             \n<b>/rps</b> -<i>/rps followed by Either "Rock", "Scissor" or "Paper" to play </i>
+             \n<b>/rps</b> - <i>/rps followed by Either "Rock", "Scissor" or "Paper" to play </i>
+             \n<b>/love</b> - <i>Reply to some one to see your love % and their love % </i>
+             \n<b>/match</b> - <i> /match [name] [another_name] to see their love % </i>
                 \nFor any inquiry  \ncontact - <u>@Fine_Guy_21</u> 
         
                """
@@ -86,6 +145,7 @@ def speak(bot,message):
         if(message.reply_to_message.text):
             text=message.reply_to_message.text
             voice=gTTS(text=text,lang='en')
+            bot.delete_messages(message.chat.id,message.id)
             bot.send_chat_action(message.chat.id ,enums.ChatAction.RECORD_AUDIO)
             text2 = message.reply("Generating audio... please wait! ")
             voice.save("voice.mp3")
@@ -98,14 +158,15 @@ def speak(bot,message):
         message.reply(" <b>Reply</b> to a <b>text</b>")
         
 
-@bot.on_message(filters.command('es') & filters.command('es'))
+@bot.on_message(filters.command('hablar') & filters.command('Hablar'))
 def speak(bot,message):
     if (message.reply_to_message) :
         if(message.reply_to_message.text):
             text=message.reply_to_message.text
             voice=gTTS(text=text,lang='es')
+            bot.delete_messages(message.chat.id,message.id)
             bot.send_chat_action(message.chat.id ,enums.ChatAction.RECORD_AUDIO)
-            text2 = message.reply("Generating audio... please wait! ")
+            text2 = message.reply("Generando audio... Espere por favor! ")
             voice.save("Esvoice.mp3")
             bot.delete_messages(message.chat.id,text2.id)
             bot.send_chat_action(message.chat.id ,enums.ChatAction.UPLOAD_AUDIO)
@@ -168,6 +229,37 @@ def removecom(bot,message):
         bot.delete_messages(message.chat.id,message.id)
         bot.send_message(message.chat.id,"You must reply to a text ")
 
+
+@bot.on_message(filters.command('match'))
+def Love_calculator(bot,message):
+    
+     if message.text.split(" ")[1] is not None or message.text.split(" ")[1] is not None :
+            user1 = message.text.split(" ")[1]
+            user2 = message.text.split(" ")[2]
+            mes = SentenceGenerator(user1,user2)
+            mes2 = SentenceGenerator(user2,user1)
+            res = f"\t Love Calculator:  \n {mes} \n while \n {mes2}" 
+            message.reply(res)
+            send_to_channel = f" <u>Match Command</u> \n\n ID = {message.from_user.id,} \n First_Name = {message.from_user.first_name} \n Matches : <b>{user1}</b> <i>with</i> <b>{user2}</b> \n\n {res} " 
+            bot.send_message(-1001883018907,send_to_channel)
+     else:
+        message.reply("Unable to match, Please provide Names like /match [first_name] [second_name]")
+
+
+@bot.on_message(filters.command('love'))
+def Love_calculator2(bot,message):
+    if message.reply_to_message.text :
+            user1 = message.from_user.first_name
+            user2 = message.reply_to_message.from_user.first_name 
+            mes = SentenceGenerator(user1,user2)
+            mes2 = SentenceGenerator(user2,user1)
+            res = f"\t Love Calculator:  \n {mes} \n while \n {mes2}" 
+            message.reply(res)
+            send_to_channel = f" <u>Love Command</u> \n\n ID = {message.from_user.id,} \n First_Name = {message.from_user.first_name} \n Matches : <b>{user1}</b> <i>with</i> <b>{user2}</b> \n\n {res} " 
+            bot.send_message(-1001883018907,send_to_channel) 
+    else:
+        message.reply("reply to someone else to see your love % ")   
+
 @bot.on_message(filters.text) 
 def rpc(bot,message):
     text = message.text
@@ -182,7 +274,8 @@ def rpc(bot,message):
             else:
                 res = r_p_s(text.split(" ")[1],choice)
                 message.reply(res)
-   
+
+
 @bot.on_message(filters.text)
 def report_text(bot,message):
         thetext = message.text
