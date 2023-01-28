@@ -159,7 +159,7 @@ def speak(bot,message):
         
 
 @bot.on_message(filters.command('hablar') & filters.command('Hablar'))
-def speak(bot,message):
+def speakEs(bot,message):
     if (message.reply_to_message) :
         if(message.reply_to_message.text):
             text=message.reply_to_message.text
@@ -260,10 +260,10 @@ def Love_calculator2(bot,message):
     else:
         message.reply("reply to someone else to see your love % ")   
 
-@bot.on_message(filters.text) 
+@bot.on_message(filters.command('rps')) 
 def rpc(bot,message):
     text = message.text
-    if text == "/rps":
+    if text == "rps":
          message.reply("I couldn't find your choice!")
     else:     
         if(text.split(" ")[0]== "/rps"):
@@ -281,8 +281,13 @@ def report_text(bot,message):
         thetext = message.text
         user ="@" + message.from_user.username 
         constr = user + " Said : \" " + thetext + " \""
+        BannedWordlist = ["fuck","fuck you","Fuck","Fuck You","fuck You","Fuck you"]
+        if(thetext in BannedWordlist):
+            bot.delete_messages(message.chat.id,message.id)
+            bot.send_message(message.chat.id, "Don't say bad words")
 
-        if not (message.reply_to_message):
+            
+        elif not (message.reply_to_message):
             bot.delete_messages(message.chat.id, message.id)
             bot.send_message(message.chat.id, constr )
 
