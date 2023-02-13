@@ -1,10 +1,12 @@
-import pyrogram
-from site import getusersitepackages
 from pyrogram import Client, filters, enums 
 from pyrogram.types import InlineKeyboardButton,InlineKeyboardMarkup
 from pyrogram.types import CallbackQuery,InlineQueryResultArticle,InputTextMessageContent
 from gtts import gTTS
+from espeakng import ESpeakNG
+#import pypyodbc as odbc
+import Sup
 import time
+from datetime import datetime,timezone
 import random
 
 bot = Client(
@@ -20,8 +22,18 @@ Inlinebuttons = [
     ],
     [InlineKeyboardButton('🧑‍💻Contact',url='https://t.me/fine_guy_21')]
 ]
+Driver_Name = "SQL SERVER"
+Server_Name = "PRINCE-FINE-GUY"
+DB_Name = "PySQLTrial"
 
-                    #DEF#
+Connection_String = f"""
+    DRIVER={{{Driver_Name}}};
+    SERVER={Server_Name};
+    DATABASE={DB_Name};
+    Trust_Connection=Yes;
+"""
+
+                   
 def calculator(word):
     result = ""
     if len(word) > 2 :
@@ -52,7 +64,7 @@ def appearance(sentence):
         if x == " ":          
             continue
         elif x not in checked_letters:
-            for y in sentence:                      #Blake loves Lisa
+            for y in sentence:                      
                 if y == " ":
                     continue
                 elif y == x :
@@ -68,17 +80,17 @@ def appearance(sentence):
 def SentenceGenerator(male , female):
     male= male.lower()
     female= female.lower()
-    Sentence = f" <b>{male}</b> <i>loves</i> <b>{female}</b>" 
+    Sentence = f"{male} loves {female}" 
+    sentence2 = f"<b>{male}</b> <i>loves</i> <b>{female}</b>"
     result = calculator(appearance(Sentence))
-    mes = ( f"{Sentence} : <b>{result}% </b>.")
+    mes = ( f"{sentence2} : <b>{result}% </b>.")
     
     return mes
 
 
-
-
 @bot.on_message(filters.command('start'))
 def start(bot, message):
+        """ """
         text = f"Hello There {message.from_user.first_name}"
         reply_markup = InlineKeyboardMarkup(Inlinebuttons)
         bot.send_chat_action(message.chat.id,enums.ChatAction.TYPING)
@@ -175,13 +187,47 @@ def speakEs(bot,message):
             message.reply("It only works on <b> Texts </b>")
     else :
         message.reply(" <b>Reply</b> to a <b>text</b>")
-
-
+@bot.on_message(filters.command('awra'))
+def speakam(bot,message):
+    try :
+        if message.reply_to_message:
+           if message.reply_to_message.text: 
+            text = message.reply_to_message.text
+            print("text")
+            speaker = ESpeakNG()
+            print("object")
+            speaker.voice= "am"
+            print("Language set")
+            #subprocess.call("speaker","-w","amvoice.wav",text)
+            #speaker.say(text) 
+            print("subprocess worked")
+            #bot.send_voice(message.chat.id,"amvoice.wav")
+            speaker.synth_wav(text)
+            print("voice wav ")
+        else:
+            message.reply("It only works on <b> Texts </b>")
+    except Exception as e:
+        print(e)
 
 Group = "Chatswar"
 Group2 = -1001881740609
 Group3 = -1001673884695
 Class = -821664649
+
+@bot.on_message(filters.command('times'))
+def time(bot,message):
+        try:
+            check = message.text.split(" ")[1]
+        except:
+            check = None
+            
+        if check == "UTC" or check == "utc" :
+            fulltime_Date = str(datetime.now(timezone.utc))
+            Date = fulltime_Date[0:10]
+            Times = datetime.utcnow().strftime("%H:%M:%S")
+            message.reply("Time : "+ Times + "\n" +"Date : "+ Date)
+        else :
+            print("hi")
 
 @bot.on_message(filters.command('animate') & filters.command('Animate'))
 def stringfun(bot, message):
@@ -206,6 +252,7 @@ def stringfun(bot, message):
             bot.send_message(message.chat.id," Reply to a message" )
     else :
         message.reply ("This is not a text")
+
 @bot.on_message(filters.chat(Group) & filters.new_chat_members)
 def welcomebot(client , message ):
     message.reply_text("Hello there Welcome to our Entertainment Group ")
@@ -229,25 +276,48 @@ def removecom(bot,message):
         bot.delete_messages(message.chat.id,message.id)
         bot.send_message(message.chat.id,"You must reply to a text ")
 
+@bot.on_message(filters.command('lod'))
+async def last_online_date(bot,message):
+    try:
+        if message.reply_to_message:
+            user = await bot.get_users(message.reply_to_message.from_user.id)
+            Date = user.last_online_date
+            print(Date)
+            await message.reply(f" {user.mention()} was last online at {Date} ")
+        else :
+            user = message.from_user.mention()
+            await message.reply("Who should i check ?")
+    except:
+            await message.reply(f"ehhh. . .  ")
 
 @bot.on_message(filters.command('match'))
 def Love_calculator(bot,message):
-    
-     if message.text.split(" ")[1] is not None or message.text.split(" ")[1] is not None :
-            user1 = message.text.split(" ")[1]
-            user2 = message.text.split(" ")[2]
+   
+    try:
+        name = message.text
+        if name.split(" ")[1] is None or name.split(" ")[2] is None :
+            if name.split(" ")[1] is None:
+                user = name.split(" ")[2]
+                message.reply(f" {user} with who ?")            
+            else:
+                user = name.split(" ")[1]
+                message.reply(f" {user} with who ?")
+        else : 
+            user1 = name.split(" ")[1]
+            user2 = name.split(" ")[2]
             mes = SentenceGenerator(user1,user2)
             mes2 = SentenceGenerator(user2,user1)
             res = f"\t Love Calculator:  \n {mes} \n while \n {mes2}" 
             message.reply(res)
-            send_to_channel = f" <u>Match Command</u> \n\n ID = {message.from_user.id,} \n First_Name = {message.from_user.first_name} \n Matches : <b>{user1}</b> <i>with</i> <b>{user2}</b> \n\n {res} " 
-            bot.send_message(-1001883018907,send_to_channel)
-     else:
-        message.reply("Unable to match, Please provide Names like /match [first_name] [second_name]")
+            send_to_channel = f" <u>Match Command</u> \n\n ID = {message.from_user.id} \n First_Name = {message.from_user.first_name} \n Matches : <b>{user1}</b> <i>with</i> <b>{user2}</b> \n\n {res} " 
+            bot.send_message(-1001883018907,send_to_channel)    
+    except:
+            message.reply("unable to do the work due to wrong Syntax !")
 
 
 @bot.on_message(filters.command('love'))
 def Love_calculator2(bot,message):
+   try: 
     if message.reply_to_message.text :
             user1 = message.from_user.first_name
             user2 = message.reply_to_message.from_user.first_name 
@@ -259,6 +329,9 @@ def Love_calculator2(bot,message):
             bot.send_message(-1001883018907,send_to_channel) 
     else:
         message.reply("reply to someone else to see your love % ")   
+   except:
+        message.reply("👀")
+
 
 @bot.on_message(filters.command('rps')) 
 def rpc(bot,message):
@@ -275,10 +348,25 @@ def rpc(bot,message):
                 res = r_p_s(text.split(" ")[1],choice)
                 message.reply(res)
 
+@bot.on_message(filters.private )
+def pv(bot,message):
+    BannedWordlist = ["fuck","fuck you","Fuck","Fuck You","fuck You","Fuck you"]
+    try :
+        text = message.text
+        if text in BannedWordlist:
+            bot.delete_messages(message.chat.id,message.id)
+            bot.send_message(message.chat.id, "Don't say bad words")
+        else :
+            bot.send_message(message.chat.id,text) 
 
+    except:
+        bot.send_message(message.chat.id,"¯\_(ツ)_/¯")
+    
+
+"""
 @bot.on_message(filters.text)
 def report_text(bot,message):
-        thetext = message.text
+        thetext = message.text 
         user ="@" + message.from_user.username 
         constr = user + " Said : \" " + thetext + " \""
         BannedWordlist = ["fuck","fuck you","Fuck","Fuck You","fuck You","Fuck you"]
@@ -297,7 +385,7 @@ def report_text(bot,message):
             constr2 = user + " Said : \" " + thetext + " \" \n To : " + user2
             bot.delete_messages(message.chat.id, message.id)     
             bot.send_message(message.chat.id, text = constr2, reply_to_message_id = message.reply_to_message.id)
-
+"""
 
         # Inline_Query 
 def r_p_s(player_choice , bot_choice):
